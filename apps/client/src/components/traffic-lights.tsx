@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @next/next/no-img-element */
 // Literally just stolen from https://github.com/spacedriveapp/spacedrive/blob/main/interface/components/TrafficLights.tsx#L36
 
 import { useMemo, type ComponentProps, type HTMLAttributes } from 'react';
+import { getCurrent } from '@tauri-apps/api/window';
 import clsx from 'clsx';
 
 import { useFocusState } from '~/hooks/use-focus-state';
@@ -13,7 +15,7 @@ export interface TrafficLightsProps extends ComponentProps<'div'> {
 }
 
 export function MacTrafficLights(props: TrafficLightsProps) {
-    const { onClose, onMinimize, onFullscreen, className } = props;
+    const { className } = props;
     const [focused] = useFocusState();
 
     return (
@@ -23,17 +25,22 @@ export function MacTrafficLights(props: TrafficLightsProps) {
         >
             <TrafficLight
                 type="close"
-                onClick={onClose}
+                onClick={async () => await getCurrent().close()}
                 colorful={focused ?? false}
             />
             <TrafficLight
                 type="minimize"
-                onClick={onMinimize}
+                onClick={async () => await getCurrent().minimize()}
                 colorful={focused ?? false}
             />
             <TrafficLight
                 type="fullscreen"
-                onClick={onFullscreen}
+                onClick={async () => {
+                    const currentWindow = getCurrent();
+                    void currentWindow.setFullscreen(
+                        !(await currentWindow.isFullscreen()),
+                    );
+                }}
                 colorful={focused ?? false}
             />
         </div>
@@ -52,6 +59,7 @@ function TrafficLight(props: TrafficLightProps) {
         switch (type) {
             case 'close':
                 return 'macos_close.svg';
+
             case 'minimize':
                 return 'macos_minimize.svg';
             case 'fullscreen':
