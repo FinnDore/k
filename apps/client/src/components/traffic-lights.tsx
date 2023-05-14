@@ -1,27 +1,24 @@
+'use client';
+
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @next/next/no-img-element */
 // Literally just stolen from https://github.com/spacedriveapp/spacedrive/blob/main/interface/components/TrafficLights.tsx#L36
-
-import { useMemo, type ComponentProps, type HTMLAttributes } from 'react';
+import { useMemo, type HTMLAttributes } from 'react';
 import { getCurrent } from '@tauri-apps/api/window';
 import clsx from 'clsx';
 
 import { useFocusState } from '~/hooks/use-focus-state';
 
-export interface TrafficLightsProps extends ComponentProps<'div'> {
-    onClose?: () => void;
-    onMinimize?: () => void;
-    onFullscreen?: () => void;
-}
-
-export function MacTrafficLights(props: TrafficLightsProps) {
-    const { className } = props;
+export default function MacTrafficLights(props: { className?: string }) {
     const [focused] = useFocusState();
 
     return (
         <div
             data-tauri-drag-region
-            className={clsx('group flex flex-row space-x-[7.5px]', className)}
+            className={clsx(
+                'group flex flex-row space-x-[7.5px]',
+                props.className,
+            )}
         >
             <TrafficLight
                 type="close"
