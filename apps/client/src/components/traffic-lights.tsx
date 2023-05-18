@@ -4,10 +4,10 @@
 /* eslint-disable @next/next/no-img-element */
 // Literally just stolen from https://github.com/spacedriveapp/spacedrive/blob/main/interface/components/TrafficLights.tsx#L36
 import { useMemo, type HTMLAttributes } from 'react';
-import { getCurrent } from '@tauri-apps/api/window';
 import clsx from 'clsx';
 
 import { useFocusState } from '~/hooks/use-focus-state';
+import { window } from '~/lazy-tauri-api/get-current';
 
 export default function MacTrafficLights(props: { className?: string }) {
     const [focused] = useFocusState();
@@ -22,18 +22,18 @@ export default function MacTrafficLights(props: { className?: string }) {
         >
             <TrafficLight
                 type="close"
-                onClick={async () => await getCurrent().close()}
+                onClick={async () => await window.closeCurrentWindow()}
                 colorful={focused ?? false}
             />
             <TrafficLight
                 type="minimize"
-                onClick={async () => await getCurrent().minimize()}
+                onClick={async () => await window.minimizeCurrentWindow()}
                 colorful={focused ?? false}
             />
             <TrafficLight
                 type="fullscreen"
                 onClick={async () => {
-                    const currentWindow = getCurrent();
+                    const currentWindow = await window.getCurrentWindow();
                     void currentWindow.setFullscreen(
                         !(await currentWindow.isFullscreen()),
                     );
